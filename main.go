@@ -26,9 +26,9 @@ func main() {
 	var cpuTemp string
 	if err != nil {
 		log.Error(err)
-		cpuTemp = "cpu temp: error"
+		cpuTemp = " CPU TEMP: error"
 	} else {
-		cpuTemp = "cpu temp: " + string(
+		cpuTemp = " CPU TEMP: " + string(
 			strings.Split(
 				sensors.Chips["coretemp-isa-0000"]["Core 0"], " ",
 			)[0],
@@ -39,9 +39,9 @@ func main() {
 	frequency, err := getCPUFrequency()
 	if err != nil {
 		log.Error(err)
-		cpuFrequency = "cpu frequency: error"
+		cpuFrequency = " CPU FREQUENCY: error"
 	} else {
-		cpuFrequency = "cpu frequency: " + frequency + " Mhz"
+		cpuFrequency = " CPU FREQUENCY: " + frequency + " Mhz"
 	}
 
 	// battery data:
@@ -49,12 +49,12 @@ func main() {
 	battery, err := battery.Get(0)
 	if err != nil {
 		log.Error(err)
-		batteryStatus = "battery: error"
+		batteryStatus = " BATTERY: error"
 	} else {
-		batteryStatus = "battery: " + fmt.Sprintf(
+		batteryStatus = " BATTERY: " + fmt.Sprintf(
 			"%.0f", math.Floor(battery.Current/battery.Full*100),
-		) +
-			" %"
+		) + " %" +
+			"\n CHARGE STATUS: " + battery.State.String()
 	}
 
 	// ping data:
@@ -62,12 +62,12 @@ func main() {
 	pinger, err := ping.NewPinger("www.google.com")
 	if err != nil {
 		log.Error(err)
-		pingAVG = "ping: error"
+		pingAVG = " PING: error"
 	} else {
 		pinger.Count = 1
 		pinger.Run()
 		stats := pinger.Statistics()
-		pingAVG = "ping: " + fmt.Sprintf("%.0f", float64(stats.AvgRtt)/1000000) + " ms"
+		pingAVG = " PING: " + fmt.Sprintf("%.0f", float64(stats.AvgRtt)/1000000) + " ms"
 	}
 
 	// ram data:
@@ -76,26 +76,56 @@ func main() {
 	memory, err := mem.VirtualMemory()
 	if err != nil {
 		log.Error(err)
-		totalRAM = "total ram: error"
-		freeRAM = "free ram: error"
+		totalRAM = " TOTAL RAM: error"
+		freeRAM = " FREE RAM: error"
 	} else {
-		totalRAM = "total ram: " + fmt.Sprintf("%.1f", float64(memory.Total)/1000000000) + " GB"
-		freeRAM = "free ram: " + fmt.Sprintf("%.1f", float64(memory.Free)/1000000000) + " GB"
+		totalRAM = " TOTAL RAM: " + fmt.Sprintf("%.1f", float64(memory.Total)/1000000000) + " GB"
+		freeRAM = " FREE RAM: " + fmt.Sprintf("%.1f", float64(memory.Total-memory.Active)/1000000000) + " GB"
 	}
 
 	// for date:
 	hour, min, sec := time.Now().Clock()
 	year, month, day := time.Now().Date()
-	date := "time: " + strconv.Itoa(hour) + ":" + strconv.Itoa(min) +
-		":" + strconv.Itoa(sec) + "\n" + "date: " + strconv.Itoa(day) +
+	date := "TIME: " + strconv.Itoa(hour) + ":" + strconv.Itoa(min) +
+		":" + strconv.Itoa(sec) + "\n" + "DATE: " + strconv.Itoa(day) +
 		"-" + month.String() + "-" + strconv.Itoa(year)
 
 	// wi-fi name:
-	wifiName := "wi-fi: " + wifiname.WifiName()
+	wifiName := " WI-FI: " + wifiname.WifiName()
+
+	// vpn status:
+	var vpnStatus string
+	status, err := getVPNStatus()
+	if err != nil {
+		log.Error(err)
+		vpnStatus = " NORDVPN: error"
+	} else {
+		vpnStatus = " NORDVPN " + status
+	}
 
 	var info []string
-	info = append(info, date, "", totalRAM, freeRAM, "", pingAVG, wifiName, "", cpuTemp, cpuFrequency, "", batteryStatus)
-	notify := exec.Command("notify-send", "-t", showingTime, "info", strings.Join(info, "\n"))
+	info = append(
+		info,
+		date,
+		"\nNETWORK:",
+		pingAVG,
+		wifiName,
+		vpnStatus,
+		"\nSYSTEM:",
+		cpuTemp,
+		cpuFrequency,
+		totalRAM,
+		freeRAM,
+		"\nBATTERY:",
+		batteryStatus,
+	)
+	notify := exec.Command(
+		"notify-send",
+		"-t",
+		showingTime,
+		"info",
+		strings.Join(info, "\n"),
+	)
 	err = notify.Run()
 	if err != nil {
 		log.Error(err)
