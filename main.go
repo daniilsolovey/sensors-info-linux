@@ -100,7 +100,7 @@ func main() {
 		log.Error(err)
 		vpnStatus = " NORDVPN: error"
 	} else {
-		vpnStatus = " NORDVPN " + status
+		vpnStatus = " NORDVPN: " + status
 	}
 
 	var info []string

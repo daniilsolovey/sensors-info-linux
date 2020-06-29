@@ -19,16 +19,9 @@ func getVPNStatus() (string, error) {
 		return "", err
 	}
 
-	var isConnected bool
-	for _, item := range result {
-		if item == "Status: Connected" {
-			isConnected = true
-		}
+	if len(result) >= 10 {
+		return "Connected" + "\n" + " " + result[4], nil
 	}
 
-	if isConnected && len(result) >= 5 {
-		return result[0] + "\n" + " " + result[4], nil
-	}
-
-	return result[0], nil
+	return "Disconnected", nil
 }
