@@ -80,7 +80,7 @@ func main() {
 		freeRAM = " FREE RAM: error"
 	} else {
 		totalRAM = " TOTAL RAM: " + fmt.Sprintf("%.1f", float64(memory.Total)/1000000000) + " GB"
-		freeRAM = " FREE RAM: " + fmt.Sprintf("%.1f", float64(memory.Total-memory.Cached)/1000000000) + " GB"
+		freeRAM = " FREE RAM: " + fmt.Sprintf("%.1f", float64(memory.Available)/1000000000) + " GB"
 	}
 
 	// for date:
