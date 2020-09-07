@@ -106,7 +106,7 @@ func main() {
 	var info []string
 	info = append(
 		info,
-		date,
+		"<span color='#335C67' font='18px'><b>"+date+"</b></span>",
 		"\nNETWORK:",
 		pingAVG,
 		wifiName,
