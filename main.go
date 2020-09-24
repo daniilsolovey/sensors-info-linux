@@ -106,11 +106,11 @@ func main() {
 	var info []string
 	info = append(
 		info,
-		"<span color='#000000' font='20px'>"+date+"</span>",
+		"<span color='#000000' font='21px'>"+date+"</span>",
 		"\nNETWORK:",
-		"<span color='#00872f' font='18px'><b>"+pingAVG+"</b></span>",
-		"<span color='#00872f' font='18px'><b>"+wifiName+"</b></span>",
-		"<span color='#00872f' font='18px'><b>"+vpnStatus+"</b></span>",
+		"<span color='#0083c9' font='18px'><b>"+pingAVG+"</b></span>",
+		"<span color='#0083c9' font='18px'><b>"+wifiName+"</b></span>",
+		"<span color='#0083c9' font='18px'><b>"+vpnStatus+"</b></span>",
 		"\nSYSTEM:",
 		"<span color='#ff0037' font='18px'><b>"+cpuTemp+"</b></span>",
 		"<span color='#0026ff' font='18px'><b>"+cpuFrequency+"</b></span>",
