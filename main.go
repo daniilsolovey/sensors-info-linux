@@ -11,7 +11,6 @@ import (
 	"github.com/distatus/battery"
 	"github.com/reconquest/pkg/log"
 	"github.com/shirou/gopsutil/mem"
-	"github.com/sparrc/go-ping"
 	"github.com/ssimunic/gosensors"
 	wifiname "github.com/yelinaung/wifi-name"
 )
@@ -59,16 +58,10 @@ func main() {
 
 	// ping data:
 	var pingAVG string
-	pinger, err := ping.NewPinger("www.google.com")
-	if err != nil {
-		log.Error(err)
-		pingAVG = " PING: error"
-	} else {
-		pinger.Count = 1
-		pinger.Run()
-		stats := pinger.Statistics()
-		pingAVG = " PING: " + fmt.Sprintf("%.0f", float64(stats.AvgRtt)/1000000) + " ms"
-	}
+	go func() {
+		pingAVG = getPing()
+	}()
+	time.Sleep(500 * time.Millisecond)
 
 	// ram data:
 	var totalRAM string
