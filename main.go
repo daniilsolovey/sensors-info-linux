@@ -11,7 +11,6 @@ import (
 	"github.com/distatus/battery"
 	"github.com/reconquest/pkg/log"
 	"github.com/shirou/gopsutil/mem"
-	"github.com/sparrc/go-ping"
 	"github.com/ssimunic/gosensors"
 	wifiname "github.com/yelinaung/wifi-name"
 )
@@ -59,16 +58,10 @@ func main() {
 
 	// ping data:
 	var pingAVG string
-	pinger, err := ping.NewPinger("www.google.com")
-	if err != nil {
-		log.Error(err)
-		pingAVG = " PING: error"
-	} else {
-		pinger.Count = 1
-		pinger.Run()
-		stats := pinger.Statistics()
-		pingAVG = " PING: " + fmt.Sprintf("%.0f", float64(stats.AvgRtt)/1000000) + " ms"
-	}
+	go func() {
+		pingAVG = getPing()
+	}()
+	time.Sleep(1000 * time.Millisecond)
 
 	// ram data:
 	var totalRAM string
@@ -80,7 +73,7 @@ func main() {
 		freeRAM = " FREE RAM: error"
 	} else {
 		totalRAM = " TOTAL RAM: " + fmt.Sprintf("%.1f", float64(memory.Total)/1000000000) + " GB"
-		freeRAM = " FREE RAM: " + fmt.Sprintf("%.1f", float64(memory.Total-memory.Active)/1000000000) + " GB"
+		freeRAM = " FREE RAM: " + fmt.Sprintf("%.1f", float64(memory.Available)/1000000000) + " GB"
 	}
 
 	// for date:
@@ -100,24 +93,24 @@ func main() {
 		log.Error(err)
 		vpnStatus = " NORDVPN: error"
 	} else {
-		vpnStatus = " NORDVPN " + status
+		vpnStatus = " NORDVPN: " + status
 	}
 
 	var info []string
 	info = append(
 		info,
-		date,
+		"<span color='#B22222' font='21px'><b>"+date+"</b></span>",
 		"\nNETWORK:",
-		pingAVG,
-		wifiName,
-		vpnStatus,
+		"<span color='#0083c9' font='18px'><b>"+pingAVG+"</b></span>",
+		"<span color='#0083c9' font='18px'><b>"+wifiName+"</b></span>",
+		"<span color='#0083c9' font='18px'><b>"+vpnStatus+"</b></span>",
 		"\nSYSTEM:",
-		cpuTemp,
-		cpuFrequency,
-		totalRAM,
-		freeRAM,
+		"<span color='#0026ff' font='18px'><b>"+cpuTemp+"</b></span>",
+		"<span color='#0026ff' font='18px'><b>"+cpuFrequency+"</b></span>",
+		"<span color='#0026ff' font='18px'><b>"+totalRAM+"</b></span>",
+		"<span color='#0026ff' font='18px'><b>"+freeRAM+"</b></span>",
 		"\nBATTERY:",
-		batteryStatus,
+		"<span color='#32CD32' font='18px'><b>"+batteryStatus+"</b></span>",
 	)
 	notify := exec.Command(
 		"notify-send",
