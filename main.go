@@ -61,7 +61,7 @@ func main() {
 	go func() {
 		pingAVG = getPing()
 	}()
-	time.Sleep(500 * time.Millisecond)
+	time.Sleep(1000 * time.Millisecond)
 
 	// ram data:
 	var totalRAM string
@@ -99,18 +99,18 @@ func main() {
 	var info []string
 	info = append(
 		info,
-		"<span color='#000000' font='21px'>"+date+"</span>",
+		"<span color='#B22222' font='21px'><b>"+date+"</b></span>",
 		"\nNETWORK:",
 		"<span color='#0083c9' font='18px'><b>"+pingAVG+"</b></span>",
 		"<span color='#0083c9' font='18px'><b>"+wifiName+"</b></span>",
 		"<span color='#0083c9' font='18px'><b>"+vpnStatus+"</b></span>",
 		"\nSYSTEM:",
-		"<span color='#ff0037' font='18px'><b>"+cpuTemp+"</b></span>",
+		"<span color='#0026ff' font='18px'><b>"+cpuTemp+"</b></span>",
 		"<span color='#0026ff' font='18px'><b>"+cpuFrequency+"</b></span>",
-		"<span color='#b300ff' font='18px'><b>"+totalRAM+"</b></span>",
-		"<span color='#327501' font='18px'><b>"+freeRAM+"</b></span>",
+		"<span color='#0026ff' font='18px'><b>"+totalRAM+"</b></span>",
+		"<span color='#0026ff' font='18px'><b>"+freeRAM+"</b></span>",
 		"\nBATTERY:",
-		"<span color='#008783' font='18px'><b>"+batteryStatus+"</b></span>",
+		"<span color='#32CD32' font='18px'><b>"+batteryStatus+"</b></span>",
 	)
 	notify := exec.Command(
 		"notify-send",
