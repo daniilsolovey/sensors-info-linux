@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
+	"github.com/go-ping/ping"
 	"github.com/reconquest/pkg/log"
-	"github.com/sparrc/go-ping"
 )
 
 func getPing() string {

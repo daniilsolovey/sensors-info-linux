@@ -1,14 +1,14 @@
 package main
 
 import (
+	"errors"
 	"os/exec"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 func getVPNStatus() (string, error) {
-	out, err := exec.Command("nordvpn", "status").Output()
+	out, err := exec.Command("/bin/sh", "-c", "sudo nordvpn status").Output()
+	exec.Command("/bin/sh", "-c", "sudo find ...")
 	if err != nil {
 		return "", err
 	}
