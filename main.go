@@ -17,6 +17,7 @@ import (
 
 const (
 	showingTime = "3000"
+	timeFormat  = "15:04:01"
 )
 
 func main() {
@@ -76,13 +77,20 @@ func main() {
 		freeRAM = " FREE RAM: " + fmt.Sprintf("%.1f", float64(memory.Available)/1000000000) + " GB"
 	}
 
+	moscowTime, localTime, err := getLocalAndMoscowTime()
+	if err != nil {
+		log.Error(err)
+	}
+
 	// for date:
-	hour, min, sec := time.Now().Clock()
-	year, month, day := time.Now().Date()
-	date := "TIME: " + strconv.Itoa(hour) + ":" + strconv.Itoa(min) +
-		":" + strconv.Itoa(sec) + "\n" + "DATE: " + strconv.Itoa(day) +
+	year, month, day := localTime.Date()
+	date := "DATE LOCAL: " + strconv.Itoa(day) +
 		"-" + month.String() + "-" + strconv.Itoa(year)
 
+	// for local date:
+	localTimeResult := "TIME LOCAL: " + localTime.Format(timeFormat)
+	// for moscow date:
+	moscowTimeResult := "Time Moscow: " + moscowTime.Format(timeFormat)
 	// wi-fi name:
 	wifiName := " WI-FI: " + wifiname.WifiName()
 
@@ -99,7 +107,9 @@ func main() {
 	var info []string
 	info = append(
 		info,
-		"<span color='#B22222' font='21px'><b>"+date+"</b></span>",
+		"<span color='#B22222' font='21px'><b>"+localTimeResult+"</b></span>",
+		"<span color='#B22222' font='19px'><b>"+date+"</b></span>",
+		"<span color='#B22222' font='18px'><b>"+moscowTimeResult+"</b></span>",
 		"\nNETWORK:",
 		"<span color='#0083c9' font='18px'><b>"+pingAVG+"</b></span>",
 		"<span color='#0083c9' font='18px'><b>"+wifiName+"</b></span>",
