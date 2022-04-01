@@ -96,12 +96,12 @@ func main() {
 
 	// vpn status:
 	var vpnStatus string
-	status, err := getVPNStatus()
+	status, err := getCommonVPNStatus()
 	if err != nil {
 		log.Error(err)
-		vpnStatus = " NORDVPN: error"
+		vpnStatus = " VPN: error"
 	} else {
-		vpnStatus = " NORDVPN: " + status
+		vpnStatus = " VPN: " + status
 	}
 
 	var info []string
@@ -110,18 +110,16 @@ func main() {
 		"<span color='#B22222' font='21px'><b>"+localTimeResult+"</b></span>",
 		"<span color='#B22222' font='19px'><b>"+date+"</b></span>",
 		"<span color='#B22222' font='18px'><b>"+moscowTimeResult+"</b></span>",
-		"\nNETWORK:",
 		"<span color='#0083c9' font='18px'><b>"+pingAVG+"</b></span>",
 		"<span color='#0083c9' font='18px'><b>"+wifiName+"</b></span>",
 		"<span color='#0083c9' font='18px'><b>"+vpnStatus+"</b></span>",
-		"\nSYSTEM:",
 		"<span color='#0026ff' font='18px'><b>"+cpuTemp+"</b></span>",
 		"<span color='#0026ff' font='18px'><b>"+cpuFrequency+"</b></span>",
 		"<span color='#0026ff' font='18px'><b>"+totalRAM+"</b></span>",
 		"<span color='#0026ff' font='18px'><b>"+freeRAM+"</b></span>",
-		"\nBATTERY:",
 		"<span color='#32CD32' font='18px'><b>"+batteryStatus+"</b></span>",
 	)
+
 	notify := exec.Command(
 		"notify-send",
 		"-t",
