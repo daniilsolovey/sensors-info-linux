@@ -47,7 +47,7 @@ func main() {
 	// battery data:
 	var batteryStatus string
 	battery, err := battery.Get(0)
-	if err != nil {
+	if err != nil && !strings.Contains(fmt.Sprint(err), "State:Invalid state `Not charging") {
 		log.Error(err)
 		batteryStatus = " BATTERY: error"
 	} else {
