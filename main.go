@@ -107,17 +107,17 @@ func main() {
 	var info []string
 	info = append(
 		info,
-		"<span color='#B22222' font='21px'><b>"+localTimeResult+"</b></span>",
-		"<span color='#B22222' font='19px'><b>"+date+"</b></span>",
-		"<span color='#B22222' font='18px'><b>"+moscowTimeResult+"</b></span>",
-		"<span color='#0083c9' font='18px'><b>"+pingAVG+"</b></span>",
-		"<span color='#0083c9' font='18px'><b>"+wifiName+"</b></span>",
-		"<span color='#0083c9' font='18px'><b>"+vpnStatus+"</b></span>",
-		"<span color='#0026ff' font='18px'><b>"+cpuTemp+"</b></span>",
-		"<span color='#0026ff' font='18px'><b>"+cpuFrequency+"</b></span>",
-		"<span color='#0026ff' font='18px'><b>"+totalRAM+"</b></span>",
-		"<span color='#0026ff' font='18px'><b>"+freeRAM+"</b></span>",
-		"<span color='#32CD32' font='18px'><b>"+batteryStatus+"</b></span>",
+		"<span color='#B22222' font='17px'><b>"+localTimeResult+"</b></span>",
+		"<span color='#B22222' font='17px'><b>"+date+"</b></span>",
+		"<span color='#B22222' font='17px'><b>"+moscowTimeResult+"</b></span>",
+		"<span color='#0083c9' font='17px'><b>"+pingAVG+"</b></span>",
+		"<span color='#0083c9' font='17px'><b>"+wifiName+"</b></span>",
+		"<span color='#0083c9' font='17px'><b>"+vpnStatus+"</b></span>",
+		"<span color='#0026ff' font='17px'><b>"+cpuTemp+"</b></span>",
+		"<span color='#0026ff' font='17px'><b>"+cpuFrequency+"</b></span>",
+		"<span color='#32CD32' font='17px'><b>"+batteryStatus+"</b></span>",
+		"<span color='#0026ff' font='17px'><b>"+totalRAM+"</b></span>",
+		"<span color='#0026ff' font='17px'><b>"+freeRAM+"</b></span>",
 	)
 
 	notify := exec.Command(
