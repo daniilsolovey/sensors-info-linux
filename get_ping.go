@@ -17,7 +17,7 @@ func getPing() string {
 		pinger.Count = 1
 		pinger.Run()
 		stats := pinger.Statistics()
-		pingAVG = " PING: " + fmt.Sprintf("%.0f", float64(stats.AvgRtt)/1000000) + " ms"
+		pingAVG = fmt.Sprintf("%.0f", float64(stats.AvgRtt)/1000000) + " ms"
 	}
 
 	return pingAVG

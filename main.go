@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"os/exec"
-	"strconv"
 	"strings"
 	"time"
 
@@ -16,119 +15,209 @@ import (
 )
 
 const (
-	showingTime = "3000"
+	showingTime = "5000"
 	timeFormat  = "15:04:01"
 )
 
 func main() {
-	// cpu data:
+	// CPU temperature
 	sensors, err := gosensors.NewFromSystem()
-	var cpuTemp string
+
+	cpuTemp := "error"
+
 	if err != nil {
 		log.Error(err)
-		cpuTemp = " CPU TEMP: error"
 	} else {
-		cpuTemp = " CPU TEMP: " + string(
-			strings.Split(
-				sensors.Chips["coretemp-isa-0000"]["Core 0"], " ",
-			)[0],
-		)
+		cpuTemp = strings.Split(
+			sensors.Chips["coretemp-isa-0000"]["Core 0"],
+			" ",
+		)[0]
 	}
 
-	var cpuFrequency string
+	// CPU frequency
+	cpuFrequency := "error"
+
 	frequency, err := getCPUFrequency()
 	if err != nil {
 		log.Error(err)
-		cpuFrequency = " CPU FREQUENCY: error"
 	} else {
-		cpuFrequency = " CPU FREQUENCY: " + frequency + " Mhz"
+		cpuFrequency = frequency
 	}
 
-	// battery data:
-	var batteryStatus string
-	battery, err := battery.Get(0)
-	if err != nil && !strings.Contains(fmt.Sprint(err), "State:Invalid state `Not charging") {
+	// Battery
+	batteryPercent := "error"
+	batteryState := "error"
+
+	bat, err := battery.Get(0)
+	if err != nil && !strings.Contains(
+		fmt.Sprint(err),
+		"State:Invalid state `Not charging",
+	) {
 		log.Error(err)
-		batteryStatus = " BATTERY: error"
 	} else {
-		batteryStatus = " BATTERY: " + fmt.Sprintf(
-			"%.0f", math.Floor(battery.Current/battery.Full*100),
-		) + " %" +
-			"\n CHARGE STATUS: " + battery.State.String()
+		batteryPercent = fmt.Sprintf(
+			"%.0f%%",
+			math.Floor(bat.Current/bat.Full*100),
+		)
+
+		batteryState = bat.State.String()
 	}
 
-	// ping data:
+	// Ping
 	var pingAVG string
+
 	go func() {
 		pingAVG = getPing()
 	}()
+
 	time.Sleep(1000 * time.Millisecond)
 
-	// ram data:
-	var totalRAM string
-	var freeRAM string
+	// RAM
+	totalRAM := "error"
+	usedRAM := "error"
+	availableRAM := "error"
+	ramUsage := "error"
+
 	memory, err := mem.VirtualMemory()
 	if err != nil {
 		log.Error(err)
-		totalRAM = " TOTAL RAM: error"
-		freeRAM = " FREE RAM: error"
 	} else {
-		totalRAM = " TOTAL RAM: " + fmt.Sprintf("%.1f", float64(memory.Total)/1000000000) + " GB"
-		freeRAM = " FREE RAM: " + fmt.Sprintf("%.1f", float64(memory.Available)/1000000000) + " GB"
+		used := memory.Total - memory.Available
+		usedPercent := float64(used) / float64(memory.Total) * 100
+
+		totalRAM = fmt.Sprintf(
+			"%.1f",
+			float64(memory.Total)/1024/1024/1024,
+		)
+
+		usedRAM = fmt.Sprintf(
+			"%.1f",
+			float64(used)/1024/1024/1024,
+		)
+
+		availableRAM = fmt.Sprintf(
+			"%.1f GB",
+			float64(memory.Available)/1024/1024/1024,
+		)
+
+		ramUsage = fmt.Sprintf("%.0f%%", usedPercent)
 	}
 
-	moscowTime, localTime, err := getLocalAndMoscowTime()
+	// Time
+	localTime := time.Now()
+
+	moscowLocation, err := time.LoadLocation("Europe/Moscow")
 	if err != nil {
 		log.Error(err)
 	}
 
-	// for date:
-	year, month, day := localTime.Date()
-	date := "DATE LOCAL: " + strconv.Itoa(day) +
-		"-" + month.String() + "-" + strconv.Itoa(year)
+	moscowTime := localTime.In(moscowLocation)
 
-	// for local date:
-	localTimeResult := "TIME LOCAL: " + localTime.Format(timeFormat)
-	// for moscow date:
-	moscowTimeResult := "Time Moscow: " + moscowTime.Format(timeFormat)
-	// wi-fi name:
-	wifiName := " WI-FI: " + wifiname.WifiName()
+	date := localTime.Format("02 January 2006")
 
-	// vpn status:
-	var vpnStatus string
+	// Wi-Fi
+	wifi := wifiname.WifiName()
+	if wifi == "" {
+		wifi = "disconnected"
+	}
+
+	// VPN
+	vpn := "error"
+
 	status, err := getCommonVPNStatus()
 	if err != nil {
 		log.Error(err)
-		vpnStatus = " VPN: error"
 	} else {
-		vpnStatus = " VPN: " + status
+		vpn = status
 	}
 
-	var info []string
-	info = append(
-		info,
-		"<span color='#B22222' font='17px'><b>"+localTimeResult+"</b></span>",
-		"<span color='#B22222' font='17px'><b>"+date+"</b></span>",
-		"<span color='#B22222' font='17px'><b>"+moscowTimeResult+"</b></span>",
-		"<span color='#0083c9' font='17px'><b>"+pingAVG+"</b></span>",
-		"<span color='#0083c9' font='17px'><b>"+wifiName+"</b></span>",
-		"<span color='#0083c9' font='17px'><b>"+vpnStatus+"</b></span>",
-		"<span color='#0026ff' font='17px'><b>"+cpuTemp+"</b></span>",
-		"<span color='#0026ff' font='17px'><b>"+cpuFrequency+"</b></span>",
-		"<span color='#32CD32' font='17px'><b>"+batteryStatus+"</b></span>",
-		"<span color='#0026ff' font='17px'><b>"+totalRAM+"</b></span>",
-		"<span color='#0026ff' font='17px'><b>"+freeRAM+"</b></span>",
-	)
+	info := []string{
+		"<span foreground='#8e44ad' size='large'><b>◷ TIME</b></span>",
+		fmt.Sprintf(
+			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"Local",
+			localTime.Format(timeFormat),
+		),
+		fmt.Sprintf(
+			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"Date",
+			date,
+		),
+		fmt.Sprintf(
+			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"Moscow",
+			moscowTime.Format(timeFormat),
+		),
+
+		"",
+
+		"<span foreground='#0083a8' size='large'><b>◉ NETWORK</b></span>",
+		fmt.Sprintf(
+			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"Wi-Fi",
+			wifi,
+		),
+		fmt.Sprintf(
+			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"Ping",
+			pingAVG,
+		),
+		fmt.Sprintf(
+			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"VPN",
+			vpn,
+		),
+
+		"",
+
+		"<span foreground='#356aa0' size='large'><b>⚙ SYSTEM</b></span>",
+		fmt.Sprintf(
+			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"CPU temp",
+			cpuTemp,
+		),
+		fmt.Sprintf(
+			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"Frequency",
+			cpuFrequency,
+		),
+		fmt.Sprintf(
+			"<span foreground='#222222'>  %-11s <b>%s / %s GB (%s)</b></span>",
+			"RAM",
+			usedRAM,
+			totalRAM,
+			ramUsage,
+		),
+		fmt.Sprintf(
+			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"Available",
+			availableRAM,
+		),
+
+		"",
+
+		"<span foreground='#2e7d32' size='large'><b>⚡ POWER</b></span>",
+		fmt.Sprintf(
+			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"Battery",
+			batteryPercent,
+		),
+		fmt.Sprintf(
+			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"Status",
+			batteryState,
+		),
+	}
 
 	notify := exec.Command(
 		"notify-send",
 		"-t",
 		showingTime,
-		"info",
+		"System info",
 		strings.Join(info, "\n"),
 	)
-	err = notify.Run()
-	if err != nil {
+
+	if err := notify.Run(); err != nil {
 		log.Error(err)
 	}
 }

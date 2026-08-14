@@ -1,42 +1,69 @@
 package main
 
 import (
-	"io/ioutil"
-	"sort"
+	"bufio"
+	"fmt"
+	"os"
 	"strconv"
 	"strings"
 )
 
 func getCPUFrequency() (string, error) {
-	contents, err := ioutil.ReadFile("/proc/cpuinfo")
+	file, err := os.Open("/proc/cpuinfo")
 	if err != nil {
 		return "", err
 	}
+	defer file.Close()
 
-	var total []float64
-	lines := strings.Split(string(contents), "\n")
-	for _, line := range lines {
-		if strings.Contains(line, "cpu MHz") {
-			frequency := strings.Split(line, ": ")
-			intFrequency, err := strconv.ParseFloat(frequency[1], 64)
-			if err != nil {
-				return "", err
-			}
+	var (
+		totalFrequency float64
+		maxFrequency   float64
+		count          int
+	)
 
-			total = append(total, intFrequency)
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		if !strings.HasPrefix(line, "cpu MHz") {
+			continue
+		}
+
+		_, value, ok := strings.Cut(line, ":")
+		if !ok {
+			continue
+		}
+
+		frequency, err := strconv.ParseFloat(
+			strings.TrimSpace(value),
+			64,
+		)
+		if err != nil {
+			return "", err
+		}
+
+		totalFrequency += frequency
+		count++
+
+		if frequency > maxFrequency {
+			maxFrequency = frequency
 		}
 	}
 
-	var totalInt []int
-
-	for _, item := range total {
-		convertedItem := int(item)
-		totalInt = append(totalInt, convertedItem)
+	if err := scanner.Err(); err != nil {
+		return "", err
 	}
 
-	sort.Slice(totalInt, func(i, j int) bool {
-		return totalInt[i] > totalInt[j]
-	})
+	if count == 0 {
+		return "", fmt.Errorf("cpu frequency not found")
+	}
 
-	return strconv.Itoa(totalInt[0]), nil
+	avgFrequency := totalFrequency / float64(count)
+
+	return fmt.Sprintf(
+		"AVG %.0f / MAX %.0f",
+		avgFrequency,
+		maxFrequency,
+	), nil
 }
