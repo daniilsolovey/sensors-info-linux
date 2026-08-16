@@ -62,7 +62,7 @@ func getCPUFrequency() (string, error) {
 	avgFrequency := totalFrequency / float64(count)
 
 	return fmt.Sprintf(
-		"AVG %.0f / MAX %.0f",
+		"%.0f(avgMHz) / %.0f(maxMHz)",
 		avgFrequency,
 		maxFrequency,
 	), nil

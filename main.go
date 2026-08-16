@@ -16,7 +16,7 @@ import (
 
 const (
 	showingTime = "5000"
-	timeFormat  = "15:04:01"
+	timeFormat  = "15:04"
 )
 
 func main() {
@@ -75,7 +75,6 @@ func main() {
 	// RAM
 	totalRAM := "error"
 	usedRAM := "error"
-	availableRAM := "error"
 	ramUsage := "error"
 
 	memory, err := mem.VirtualMemory()
@@ -93,11 +92,6 @@ func main() {
 		usedRAM = fmt.Sprintf(
 			"%.1f",
 			float64(used)/1024/1024/1024,
-		)
-
-		availableRAM = fmt.Sprintf(
-			"%.1f GB",
-			float64(memory.Available)/1024/1024/1024,
 		)
 
 		ramUsage = fmt.Sprintf("%.0f%%", usedPercent)
@@ -173,25 +167,20 @@ func main() {
 		"<span foreground='#356aa0' size='large'><b>⚙ SYSTEM</b></span>",
 		fmt.Sprintf(
 			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
-			"CPU temp",
+			"CPU temp.",
 			cpuTemp,
 		),
 		fmt.Sprintf(
 			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
-			"Frequency",
+			"CPU freq.",
 			cpuFrequency,
 		),
 		fmt.Sprintf(
-			"<span foreground='#222222'>  %-11s <b>%s / %s GB (%s)</b></span>",
+			"<span foreground='#222222'>  %-5s <b>(%s) %s(usedGB) / %s(totalGB)</b></span>",
 			"RAM",
+			ramUsage,
 			usedRAM,
 			totalRAM,
-			ramUsage,
-		),
-		fmt.Sprintf(
-			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
-			"Available",
-			availableRAM,
 		),
 
 		"",
