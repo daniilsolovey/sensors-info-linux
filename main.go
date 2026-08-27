@@ -97,6 +97,14 @@ func main() {
 		ramUsage = fmt.Sprintf("%.0f%%", usedPercent)
 	}
 
+	ramValue := fmt.Sprintf(
+		"(%s) %s(usedGB)\n%s%s(totalGB)",
+		ramUsage,
+		usedRAM,
+		strings.Repeat(" ", 14+len(fmt.Sprintf("(%s) ", ramUsage))),
+		totalRAM,
+	)
+
 	// Time
 	localTime := time.Now()
 
@@ -176,11 +184,9 @@ func main() {
 			cpuFrequency,
 		),
 		fmt.Sprintf(
-			"<span foreground='#222222'>  %-5s <b>(%s) %s(usedGB) / %s(totalGB)</b></span>",
+			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
 			"RAM",
-			ramUsage,
-			usedRAM,
-			totalRAM,
+			ramValue,
 		),
 
 		"",

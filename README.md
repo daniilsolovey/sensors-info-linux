@@ -21,7 +21,7 @@ The notification is grouped into four sections.
 **SYSTEM**
 
 - CPU temperature;
-- average and maximum instantaneous CPU frequency across logical CPUs;
+- CPU frequency split by efficiency cores and the remaining cores, with core count and average frequency for each group;
 - used RAM, total RAM, and usage percentage.
 
 **POWER**
@@ -52,16 +52,21 @@ The notification is titled `System info` and closes after 5 seconds.
 
 ## CPU frequency
 
-The utility reads current CPU frequencies from `/proc/cpuinfo` (`cpu MHz` lines).
+The utility reads current CPU frequencies the same way btop does: from
+`/sys/devices/system/cpu/cpufreq/policy*/scaling_cur_freq`. If that is
+unavailable, it falls back to `/proc/cpuinfo` (`cpu MHz` lines).
 
-`avg` is the average instantaneous frequency across all logical CPUs.
+On hybrid Intel CPUs, cores are split using `/sys/devices/cpu_atom/cpus`
+(efficiency cores) and the remaining logical CPUs (performance cores).
+The count is the number of physical cores in the group. `avgMHz` is the
+average instantaneous frequency of all logical CPUs in that group.
 
-`max` is the highest instantaneous frequency among all logical CPUs during the current `/proc/cpuinfo` read. It is not the maximum frequency observed over a historical time interval.
+On CPUs without efficiency cores, a single `cores` group is shown.
 
 Example:
 
 ```text
-Frequency  1150(avg MHz) / 2100(max MHz)
+CPU freq.  E-cores 8 1840(avgMHz) / P-cores 2 2610(avgMHz)
 ```
 
 ## RAM usage
@@ -77,7 +82,8 @@ The notification shows usage percentage, used memory, and total memory.
 Example:
 
 ```text
-RAM  (19%) 5.9(used GB) / 31.0(total GB)
+RAM         (19%) 5.9(usedGB)
+                  31.0(totalGB)
 ```
 
 ## CPU temperature
