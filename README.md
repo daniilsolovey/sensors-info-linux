@@ -26,6 +26,7 @@ The notification is grouped into four sections.
 
 **POWER**
 
+- current power profile from `powerprofilesctl get`;
 - battery percentage;
 - battery charging/discharging state.
 
@@ -39,6 +40,7 @@ The notification is grouped into four sections.
 - `notify-send` (libnotify)
 - a notification daemon, for example dunst
 - `nmcli` (NetworkManager) for VPN status
+- `powerprofilesctl` (power-profiles-daemon) for the active power profile
 - lm-sensors data for CPU temperature (`coretemp`)
 
 ## Build and run
@@ -115,6 +117,16 @@ nmcli con show --active
 ```
 
 The status is `Connected` if an active connection contains `tun0`, otherwise `Disconnected`.
+
+## Power profile
+
+The active platform power profile is read with:
+
+```bash
+powerprofilesctl get
+```
+
+Typical values are `power-saver`, `balanced`, and `performance`.
 
 ## Desktop notifications
 

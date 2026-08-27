@@ -133,6 +133,16 @@ func main() {
 		vpn = status
 	}
 
+	// Power profile
+	powerProfile := "error"
+
+	profile, err := getPowerProfile()
+	if err != nil {
+		log.Error(err)
+	} else {
+		powerProfile = profile
+	}
+
 	info := []string{
 		"<span foreground='#8e44ad' size='large'><b>◷ TIME</b></span>",
 		fmt.Sprintf(
@@ -192,6 +202,11 @@ func main() {
 		"",
 
 		"<span foreground='#2e7d32' size='large'><b>⚡ POWER</b></span>",
+		fmt.Sprintf(
+			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"Profile",
+			powerProfile,
+		),
 		fmt.Sprintf(
 			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
 			"Battery",
