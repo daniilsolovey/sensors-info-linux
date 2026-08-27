@@ -22,7 +22,8 @@ The notification is grouped into four sections.
 
 - CPU temperature;
 - CPU frequency split by efficiency cores and the remaining cores, with core count and average frequency for each group;
-- used RAM, total RAM, and usage percentage.
+- used RAM, total RAM, and usage percentage;
+- fan speeds, when the kernel exposes them.
 
 **POWER**
 
@@ -91,6 +92,21 @@ RAM         (19%) 5.9(usedGB)
 ## CPU temperature
 
 CPU temperature is read from lm-sensors chip `coretemp-isa-0000`, sensor `Core 0`.
+
+## Fan speeds
+
+Fan speeds are read from `/sys/class/hwmon/*/fan*_input`. Every readable fan
+is shown. If no fan files can be read, the Fans row is omitted.
+
+The generic `acpi_fan` sensor is ignored when a vendor hwmon driver already
+reports fans, because ACPI often exposes a dummy 0 RPM entry.
+
+Example:
+
+```text
+Fans        fan1 5586 RPM
+            fan2 5588 RPM
+```
 
 ## Local time
 

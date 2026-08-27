@@ -193,12 +193,25 @@ func main() {
 			"CPU freq.",
 			cpuFrequency,
 		),
+	}
+
+	info = append(info,
 		fmt.Sprintf(
 			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
 			"RAM",
 			ramValue,
 		),
+	)
 
+	if fanSpeeds, ok := getFanSpeeds(); ok {
+		info = append(info, fmt.Sprintf(
+			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"Fans",
+			fanSpeeds,
+		))
+	}
+
+	info = append(info,
 		"",
 
 		"<span foreground='#2e7d32' size='large'><b>⚡ POWER</b></span>",
@@ -217,7 +230,7 @@ func main() {
 			"Status",
 			batteryState,
 		),
-	}
+	)
 
 	notify := exec.Command(
 		"notify-send",
