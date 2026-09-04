@@ -28,8 +28,12 @@ The notification is grouped into four sections.
 **POWER**
 
 - current power profile from `powerprofilesctl get`;
-- battery percentage;
-- battery charging/discharging state.
+- battery charge limits as `start - end` thresholds from
+  `/sys/class/power_supply/BAT0/charge_control_{start,end}_threshold`
+  (`n/a` when the kernel does not expose them);
+- battery status from `/sys/class/power_supply/BAT0/status`
+  (`Charging`, `Discharging`, `Not charging`, `Full`);
+- current battery charge level in percent.
 
 ## Example
 

@@ -63,6 +63,15 @@ func main() {
 		batteryState = bat.State.String()
 	}
 
+	// The kernel reports "Not charging" when the charge limit is
+	// reached, which the battery library does not understand.
+	if state := readBatterySysfs("status"); state != "" {
+		batteryState = state
+	}
+
+	chargeStart := getChargeThreshold("charge_control_start_threshold")
+	chargeEnd := getChargeThreshold("charge_control_end_threshold")
+
 	// Ping
 	var pingAVG string
 
@@ -221,14 +230,20 @@ func main() {
 			powerProfile,
 		),
 		fmt.Sprintf(
-			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
-			"Battery",
-			batteryPercent,
+			"<span foreground='#222222'>  %-11s <b>%s - %s</b></span>",
+			"Charge lim",
+			chargeStart,
+			chargeEnd,
 		),
 		fmt.Sprintf(
 			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
 			"Status",
 			batteryState,
+		),
+		fmt.Sprintf(
+			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"Charge lvl",
+			batteryPercent,
 		),
 	)
 
