@@ -3,8 +3,11 @@ package main
 import (
 	"fmt"
 	"math"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/distatus/battery"
@@ -17,9 +20,24 @@ import (
 const (
 	showingTime = "5000"
 	timeFormat  = "15:04"
+
+	// Fixed notification ID: dunst replaces the existing window instead of
+	// stacking a new one to the right.
+	notifyID = "991337"
+	stackTag = "sensors-info"
+
+	// Minimal interval between two notifications. Protects dunst from being
+	// flooded when the hotkey is held down.
+	minInterval = 500 * time.Millisecond
 )
 
 func main() {
+	unlock, ok := acquireRunGuard()
+	if !ok {
+		return
+	}
+	defer unlock()
+
 	// CPU temperature
 	sensors, err := gosensors.NewFromSystem()
 
@@ -249,8 +267,9 @@ func main() {
 
 	notify := exec.Command(
 		"notify-send",
-		"-t",
-		showingTime,
+		"-t", showingTime,
+		"-r", notifyID,
+		"-h", "string:x-dunst-stack-tag:"+stackTag,
 		"System info",
 		strings.Join(info, "\n"),
 	)
@@ -258,4 +277,53 @@ func main() {
 	if err := notify.Run(); err != nil {
 		log.Error(err)
 	}
+}
+
+// acquireRunGuard makes sure only one instance runs at a time and that
+// notifications are not sent more often than minInterval. Returns false when
+// this invocation should be skipped.
+func acquireRunGuard() (func(), bool) {
+	dir := os.Getenv("XDG_RUNTIME_DIR")
+	if dir == "" {
+		dir = os.TempDir()
+	}
+
+	path := filepath.Join(dir, "sensors-info.lock")
+
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR, 0o600)
+	if err != nil {
+		log.Error(err)
+		return func() {}, true
+	}
+
+	// Another instance is running right now: skip.
+	if err := syscall.Flock(int(file.Fd()), syscall.LOCK_EX|syscall.LOCK_NB); err != nil {
+		file.Close()
+		return nil, false
+	}
+
+	unlock := func() {
+		syscall.Flock(int(file.Fd()), syscall.LOCK_UN)
+		file.Close()
+	}
+
+	// Previous instance finished too recently: skip.
+	var last int64
+	if _, err := fmt.Fscan(file, &last); err == nil {
+		if time.Since(time.Unix(0, last)) < minInterval {
+			unlock()
+			return nil, false
+		}
+	}
+
+	if err := file.Truncate(0); err != nil {
+		log.Error(err)
+	}
+	if _, err := file.WriteAt(
+		[]byte(fmt.Sprint(time.Now().UnixNano())), 0,
+	); err != nil {
+		log.Error(err)
+	}
+
+	return unlock, true
 }
