@@ -155,17 +155,17 @@ func main() {
 	info := []string{
 		"<span foreground='#8e44ad' size='large'><b>◷ TIME</b></span>",
 		fmt.Sprintf(
-			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"<span foreground='#cdd6f4'>  %-11s <b>%s</b></span>",
 			"Local",
 			localTime.Format(timeFormat),
 		),
 		fmt.Sprintf(
-			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"<span foreground='#cdd6f4'>  %-11s <b>%s</b></span>",
 			"Date",
 			date,
 		),
 		fmt.Sprintf(
-			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"<span foreground='#cdd6f4'>  %-11s <b>%s</b></span>",
 			"Moscow",
 			moscowTime.Format(timeFormat),
 		),
@@ -174,17 +174,17 @@ func main() {
 
 		"<span foreground='#0083a8' size='large'><b>◉ NETWORK</b></span>",
 		fmt.Sprintf(
-			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"<span foreground='#cdd6f4'>  %-11s <b>%s</b></span>",
 			"Wi-Fi",
 			wifi,
 		),
 		fmt.Sprintf(
-			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"<span foreground='#cdd6f4'>  %-11s <b>%s</b></span>",
 			"Ping",
 			pingAVG,
 		),
 		fmt.Sprintf(
-			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"<span foreground='#cdd6f4'>  %-11s <b>%s</b></span>",
 			"VPN",
 			vpn,
 		),
@@ -193,12 +193,12 @@ func main() {
 
 		"<span foreground='#356aa0' size='large'><b>⚙ SYSTEM</b></span>",
 		fmt.Sprintf(
-			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"<span foreground='#cdd6f4'>  %-11s <b>%s</b></span>",
 			"CPU temp.",
 			cpuTemp,
 		),
 		fmt.Sprintf(
-			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"<span foreground='#cdd6f4'>  %-11s <b>%s</b></span>",
 			"CPU freq.",
 			cpuFrequency,
 		),
@@ -206,7 +206,7 @@ func main() {
 
 	info = append(info,
 		fmt.Sprintf(
-			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"<span foreground='#cdd6f4'>  %-11s <b>%s</b></span>",
 			"RAM",
 			ramValue,
 		),
@@ -214,7 +214,7 @@ func main() {
 
 	if fanSpeeds, ok := getFanSpeeds(); ok {
 		info = append(info, fmt.Sprintf(
-			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"<span foreground='#cdd6f4'>  %-11s <b>%s</b></span>",
 			"Fans",
 			fanSpeeds,
 		))
@@ -225,23 +225,23 @@ func main() {
 
 		"<span foreground='#2e7d32' size='large'><b>⚡ POWER</b></span>",
 		fmt.Sprintf(
-			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"<span foreground='#cdd6f4'>  %-11s <b>%s</b></span>",
 			"Profile",
 			powerProfile,
 		),
 		fmt.Sprintf(
-			"<span foreground='#222222'>  %-11s <b>%s - %s</b></span>",
+			"<span foreground='#cdd6f4'>  %-11s <b>%s - %s</b></span>",
 			"Charge lim",
 			chargeStart,
 			chargeEnd,
 		),
 		fmt.Sprintf(
-			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"<span foreground='#cdd6f4'>  %-11s <b>%s</b></span>",
 			"Status",
 			batteryState,
 		),
 		fmt.Sprintf(
-			"<span foreground='#222222'>  %-11s <b>%s</b></span>",
+			"<span foreground='#cdd6f4'>  %-11s <b>%s</b></span>",
 			"Charge lvl",
 			batteryPercent,
 		),
